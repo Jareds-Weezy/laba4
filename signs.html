@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дорожные знаки</title>
+    
+    <!-- Подключение библиотек jQuery -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            text-align: left;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .sign-item {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            vertical-align: top;
+        }
+        
+        img {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: white;
+            display: block;
+        }
+        
+        .ui-tooltip {
+            max-width: 300px;
+            font-size: 12px;
+            padding: 8px;
+        }
+        
+        
+        #signs-container {
+            text-align: left;
+        }
+        
+        
+        .sign-row {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Дорожные знаки</h1>
+    <div id="signs-container"></div>
+
+    <script>
+        $(function () {
+            const container = $('#signs-container');
+            const basePath = 'img/signs/';
+            
+            const imageFiles = [
+                '1_4_2.gif', '1_4_3.gif', '1_4_4.gif', '1_4_5.gif', '1_4_6.gif',
+                '1_16.svg', '1_17.svg', '1_18.svg', '1_19.svg', '1_20_1.svg',
+                '1_20_2.svg', '1_20_3.svg', '1_21.svg', '1_22.svg', '1_23.svg',
+                '1_24.svg', '1_25.svg', '1_26.svg', '1_27.svg', '1_28.svg',
+                '1_29.svg', '1_30.svg', '1_31.svg', '1_32.svg', '1_33.svg',
+                '1_34_1.svg', '1_34_2.svg', '1_34_3.svg'
+            ];
+            
+            let currentRow = $('<div class="sign-row"></div>');
+            let imgCount = 0;
+            
+            
+            imageFiles.forEach((filename, index) => {
+                const imgPath = basePath + filename;
+                
+                
+                let signName = '';
+                
+                
+                const nameWithoutExt = filename.split('.')[0];
+                const parts = nameWithoutExt.split('_');
+                
+                if (parts.length >= 2) {
+                    
+                    if (parts.length >= 3) {
+                        signName = `Знак ${parts[0]}.${parts[1]}.${parts[2]}`;
+                    } else {
+                        
+                        signName = `Знак ${parts[0]}.${parts[1]}`;
+                    }
+                } else {
+                    
+                    signName = `Дорожный знак ${filename}`;
+                }
+                
+                
+                const signItem = $('<div class="sign-item"></div>');
+                
+                // Создаем элемент изображения
+                const img = $('<img>')
+                    .attr('src', imgPath)
+                    .attr('alt', signName)
+                    .attr('title', signName)
+                    .addClass('tooltip')
+                    .data('hint', signName)
+                    .on('error', function() {
+                        console.log('Файл не найден:', imgPath);
+                        
+                        $(this).attr('src', 'https://via.placeholder.com/100x100/e0e0e0/666666?text=' + encodeURIComponent(signName.substring(0, 10)));
+                    });
+                
+                
+                signItem.append(img);
+                
+                
+                currentRow.append(signItem);
+                imgCount++;
+                
+                
+                if ((index + 1) % 5 === 0 && (index + 1) !== imageFiles.length) {
+                    container.append(currentRow);
+                    currentRow = $('<div class="sign-row"></div>');
+                }
+            });
+            
+            
+            if (currentRow.children().length > 0) {
+                container.append(currentRow);
+            }
+            
+            console.log(`Создано ${imgCount} изображений`);
+
+            
+            $(document).tooltip({ 
+                items: "img", 
+                content: function () { 
+                    var $element = $(this); 
+                    if ($element.is("img")) { 
+                        return $element.data('hint'); 
+                    } 
+                },
+                show: { delay: 300 },
+                hide: { delay: 100 }
+            }); 
+        }); 
+    </script>
+</body>
+</html>
